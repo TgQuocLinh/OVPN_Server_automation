@@ -1,0 +1,49 @@
+- hosts: ovpn_server
+  remote_user: root
+
+  tasks:
+
+  - name: Copy OpenVPN install script
+    copy:
+       src: /root/openvpn-install.sh
+       dest: /root/openvpn-install.sh
+       mode: 0755
+
+  - name: Install OpenVPN server
+    shell: timeout 60 /bin/echo -e "35.229.126.109\n1\n1194\n3\nadmin\n\n\n" | /bin/bash /root/openvpn-install.sh
+
+  
+  - name: Permission config for OpenVPN server config file
+    file:
+       path: /etc/openvpn/server.conf
+       mode: 0744
+
+  - name: Configure OpenVPN server
+    lineinfile:
+       path: /etc/openvpn/server.conf
+       state: present
+       regexp: '^push "redirect-gateway def1 bypass-dhcp"'
+       line: 'client-to-client'
+
+  - name: Configure OpenVPN server
+    lineinfile:
+       path: /etc/openvpn/server.conf
+       state: absent
+       regexp: "{{item}}"
+    with_items:
+       - '^push "dhcp-option DNS 8.8.8.8"'
+       - '^push "dhcp-option DNS 8.8.4.4"'
+
+  - name: Return permission config for OpenVPN server config file
+    file:
+       path: /etc/openvpn/server.conf
+       mode: 0644
+
+  - name: Start OpenVPN server
+    service: 
+       name: openvpn
+       state: restarted
+    
+
+
+
