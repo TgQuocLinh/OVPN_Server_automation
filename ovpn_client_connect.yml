@@ -1,0 +1,18 @@
+- hosts: es_server
+  remote_user: root
+
+  tasks:
+
+  - name: Install OpenVPN
+    apt:
+       name: openvpn
+       state: present
+
+  - name: Copy config file to client (test) 
+    copy:
+       src: /root/ovpn_client/35.229.126.109/root/es_client_test.ovpn
+       dest: /root/es_client_test.ovpn
+       mode: 0644
+  
+  - name: Connect to OpenVPN server
+    shell: openvpn --config /root/es_client_test.ovpn

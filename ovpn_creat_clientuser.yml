@@ -1,0 +1,21 @@
+- hosts: ovpn_server
+  remote_user: root
+
+  tasks:
+
+  - name: Creat users for OpenVPN clients
+    shell: /bin/echo -e "{{item}}" | /bin/bash /root/openvpn-install.sh
+    loop:
+       - "1\nes_client_test\n"
+       - "1\nes_client_1\n"
+       - "1\nes_client_2\n"
+
+  - name: Copy all client congfig files from OpenVPN server
+    fetch:
+       src: "{{item}}"
+       dest: /root/ovpn_client/
+    with_items:
+       - /root/es_client_test.ovpn
+       - /root/es_client_1.ovpn
+       - /root/es_client_2.ovpn
+
