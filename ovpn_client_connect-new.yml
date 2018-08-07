@@ -1,0 +1,41 @@
+- hosts: es_server
+  remote_user: root
+
+  tasks:
+
+  - name: Install OpenVPN
+    apt:
+       name: openvpn
+       state: present
+
+  - name: Copy config file to client (test) 
+    copy:
+       src: /root/ovpn_client/35.229.126.109/root/es_client_test.ovpn
+       dest: /root/es_client_test.ovpn
+       mode: 0644
+  
+  - name: Copy script file reconnect openvpn
+    copy:
+       src: /root/reconnect_openvpn.sh
+       dest: /root/reconnect_openvpn.sh
+       mode: 0755
+
+  - name: Add command to script
+    lineinfile:
+       path: /root/reconnect_openvpn.sh
+       line: 'openvpn --config /root/es_client_test.ovpn'
+  
+  - name: Add crontab job to reconnect on boot
+    cron:
+       name: reconnect openvpn on boot
+       special_time: reboot
+       job: "sh /root/reconnect_openvpn.sh"
+
+  - name: Restart cron service
+    service:
+        name: cron
+        state: restarted
+
+  - name: Connect to OpenVPN server
+    shell: openvpn --config /root/es_client_test.ovpn
+
