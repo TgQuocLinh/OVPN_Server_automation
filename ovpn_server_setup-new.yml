@@ -25,15 +25,6 @@
        regexp: '^push "redirect-gateway def1 bypass-dhcp"'
        line: 'client-to-client'
 
-  - name: Configure OpenVPN server
-    lineinfile:
-       path: /etc/openvpn/server.conf
-       state: absent
-       regexp: "{{item}}"
-    with_items:
-       - '^push "dhcp-option DNS 8.8.8.8"'
-       - '^push "dhcp-option DNS 8.8.4.4"'
-
   - name: Return permission config for OpenVPN server config file
     file:
        path: /etc/openvpn/server.conf
