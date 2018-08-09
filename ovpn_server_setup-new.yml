@@ -12,6 +12,10 @@
   - name: Install OpenVPN server
     shell: timeout 60 /bin/echo -e "35.229.126.109\n1\n1194\n3\nadmin\n\n\n" | /bin/bash /root/openvpn-install.sh
 
+  - name: Start OpenVPN server
+    service: 
+       name: openvpn
+       state: started
   
   - name: Permission config for OpenVPN server config file
     file:
@@ -30,7 +34,7 @@
        path: /etc/openvpn/server.conf
        mode: 0644
 
-  - name: Start OpenVPN server
+  - name: Restart OpenVPN server
     service: 
        name: openvpn
        state: restarted
