@@ -28,6 +28,11 @@
        state: present
        regexp: '^push "redirect-gateway def1 bypass-dhcp"'
        line: 'client-to-client'
+       
+  - name: Configure OpenVPN client auto reconnect
+    lineinfile:
+       path: /etc/openvpn/server.conf
+       line: 'push "keepalive 10 30"'
 
   - name: Return permission config for OpenVPN server config file
     file:
